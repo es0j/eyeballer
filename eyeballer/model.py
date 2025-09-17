@@ -12,6 +12,8 @@ import numpy as np
 import pandas as pd
 import Augmentor
 import tensorflow as tf
+# append to lines above
+tf.compat.v1.logging.set_verbosity(tf.compat.v1.logging.ERROR)
 
 from tensorflow.keras.applications.mobilenet import preprocess_input
 from sklearn.metrics import classification_report, accuracy_score, hamming_loss
@@ -60,7 +62,7 @@ class EyeballModel:
             except OSError:
                 print("ERROR: Unable to open weights file '{}'".foramt(weights_file))
                 sys.exit(-1)
-            print("Loaded model from file.")
+            #print("Loaded model from file.")
         else:
             if weights_file is not None:
                 raise FileNotFoundError
@@ -245,7 +247,7 @@ class EyeballModel:
                 print("\nWARN: Skipping empty or corrupt file: ", screenshot)
                 continue
 
-            prediction = self.model.predict(img, batch_size=1)
+            prediction = self.model.predict(img, batch_size=1,verbose=0)
             result = dict()
             result["filename"] = screenshot
             result["custom404"] = prediction[0][0]

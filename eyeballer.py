@@ -3,9 +3,24 @@
 import click
 import csv
 
+
+import os
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+os.environ["CUDA_VISIBLE_DEVICES"] = "-1" 
+import logging
+import tensorflow as tf
+tf.get_logger().setLevel(logging.ERROR)
+
+
 from eyeballer.model import EyeballModel, DATA_LABELS
 from eyeballer.visualization import HeatMap
 from jinja2 import Template
+from playwright.sync_api import sync_playwright
+import tempfile
+import json
+import numpy as np
+
+
 
 
 @click.group(invoke_without_command=True)
@@ -63,6 +78,32 @@ def predict(ctx, screenshot, heatmap, threshold):
         buildHTML(processResults(results, threshold))
         print("HTML written to results.html")
 
+
+
+def print_website(url: str, output_file: str = "screenshot.png"):
+    with sync_playwright() as p:
+        browser = p.chromium.launch(headless=True)
+        page = browser.new_page(viewport={"width": 1600, "height": 900})
+        page.goto(url)
+        page.screenshot(path=output_file)
+        browser.close()
+
+
+@cli.command()
+@click.argument('url')
+@click.pass_context
+def predict_url(ctx, url):
+    model = EyeballModel(**ctx.obj['model_kwargs'],quiet=True)
+    with tempfile.NamedTemporaryFile(mode="w+b", suffix=".png", delete=False) as tmp:
+        #print(tmp.name)
+        print_website(url,tmp.name)
+        results = model.predict(tmp.name)[0]
+    
+    # Converte para tipos Python nativos
+    results = {k: (v.item() if isinstance(v, np.generic) else v) for k, v in results.items()}
+    results['url']=url
+    del results["filename"]
+    print(json.dumps(results))
 
 def processResults(results, threshold):
     '''Filter the initial results dictionary and reformat it for use in JS.

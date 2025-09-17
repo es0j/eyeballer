@@ -1,6 +1,8 @@
 import numpy as np
 import math
 import tensorflow as tf
+# append to lines above
+tf.compat.v1.logging.set_verbosity(tf.compat.v1.logging.ERROR)
 
 from copy import deepcopy
 from matplotlib import pyplot as plt
