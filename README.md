@@ -82,6 +82,10 @@ NOTE: For best results, make sure you screenshot your websites in a native 1.6x 
 To eyeball some screenshots, just run the "predict" mode:
 
 ```
+eyeballer.py --weights bishop-fox-pretrained-v3.h5 predict-url 'htttps://www.google.com'
+```
+
+```
 eyeballer.py --weights YOUR_WEIGHTS.h5 predict YOUR_FILE.png
 ```
 
