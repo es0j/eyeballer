@@ -12,6 +12,12 @@ import numpy as np
 import pandas as pd
 import Augmentor
 import tensorflow as tf
+import absl.logging
+
+# Hide tensorflow INFO/WARNING messages
+tf.get_logger().setLevel(logging.ERROR)
+absl.logging.set_verbosity(absl.logging.ERROR)
+
 # append to lines above
 tf.compat.v1.logging.set_verbosity(tf.compat.v1.logging.ERROR)
 
